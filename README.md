@@ -6,17 +6,18 @@ A efficient and safe rdb dumper/parser in Golang.Interface is very friendly for 
 
 ### Usage of:
 ```
-  -o string
-    	set the output for parse. (default: out_file).can file-path or addr for redis
-
+  -action string
+        <parse/load/dump/trans>.parse rdb/load rdb to redis/dump rdb from redis (default "parse")
+  -from_addr string
+        <redis-host:redis-port>.dump from redis addr.For example:192.168.1.1:6379
+  -out_file string
+        <file-path/redis-host:redis-port>.For example: ./dump.rdb.csv (default "./out_file")
+  -parse_type string
+        <kv/json/none>. (default "kv")
   -rdb string
-    	<rdb-file-name>. For example: ./dump.rdb
-
-  -addr string
-        <host:port>. For example: 192.168.1.1:6379
-
-  -type string
-    	set the out type, support type: json、kv、redis. (default: kv)
+        <rdb-file-name>. For example: ./dump.rdb
+  -to_addr string
+        <redis-host:redis-port>.dump to redis addr.For example:192.168.1.1:6379
 ```
 
 
