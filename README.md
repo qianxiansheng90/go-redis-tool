@@ -8,14 +8,19 @@ A efficient and safe rdb dumper/parser in Golang.Interface is very friendly for 
 ```
   -action string
         <parse/load/dump/trans>.parse rdb/load rdb to redis/dump rdb from redis (default "parse")
+
   -from_addr string
         <redis-host:redis-port>.dump from redis addr.For example:192.168.1.1:6379
+
   -out_file string
         <file-path/redis-host:redis-port>.For example: ./dump.rdb.csv (default "./out_file")
+
   -parse_type string
         <kv/json/none>. (default "kv")
+
   -rdb string
         <rdb-file-name>. For example: ./dump.rdb
+
   -to_addr string
         <redis-host:redis-port>.dump to redis addr.For example:192.168.1.1:6379
 ```
@@ -56,17 +61,17 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
 ### 使用方式
 ```
   -action string
-        <parse/load/dump/trans>.parse rdb/load rdb to redis/dump rdb from redis (default "parse")
+        <parse/load/dump/trans>.解析rdb文件/rdb加载到redis/从redis导出rdb/从redis导出rdb并加载到redis中 (default "parse")
   -from_addr string
-        <redis-host:redis-port>.dump from redis addr.For example:192.168.1.1:6379
+        <redis-host:redis-port>.导出rdb的redis地址.For example:192.168.1.1:6379
   -out_file string
-        <file-path/redis-host:redis-port>.For example: ./dump.rdb.csv (default "./out_file")
+        <file-path/redis-host:redis-port>.导出的文件: ./dump.rdb.csv (default "./out_file")
   -parse_type string
-        <kv/json/none>. (default "kv")
+        <kv/json/none>.解析rdb类型kv格式、JSON格式、none格式(直接导出为文件) (default "kv")
   -rdb string
-        <rdb-file-name>. For example: ./dump.rdb
+        <rdb-file-name>.需要解析的rdb文件全路径 For example: ./dump.rdb
   -to_addr string
-        <redis-host:redis-port>.dump to redis addr.For example:192.168.1.1:6379
+        <redis-host:redis-port>.需要导入rdb的redis地址.For example:192.168.1.1:6379
 ```
 
 
