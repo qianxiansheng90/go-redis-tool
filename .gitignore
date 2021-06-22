@@ -1,0 +1,8 @@
+svn
+.tmp
+.download
+.history
+output
+.*.swp
+.*.swo
+.vscode/
