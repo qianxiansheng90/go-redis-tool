@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -20,10 +21,11 @@ const (
 	actionLoad     = "load"
 	actionParse    = "parse"
 	actionTrans    = "trans"
+	actionInfo     = "info"
 )
 
 var (
-	action            = flag.String("action", actionDump, "<parse/load/dump/trans>.parse rdb file/load rdb file to redis/dump rdb from redis/dump rdb from redis and load to redis")
+	action            = flag.String("action", actionDump, "<parse/load/dump/trans/info>.parse rdb file/load rdb file to redis/dump rdb from redis/dump rdb from redis and load to redis")
 	rdbFile           = flag.String("rdb", "", "<rdb-file-name>. For example: ./dump.rdb")
 	fromRedisAddr     = flag.String("from_addr", "127.0.0.1:6379", "<redis-host:redis-port>.dump from redis addr.For example:192.168.1.1:6379")
 	fromRedisAuthPass = flag.String("from_auth", "", "connect to from_addr dump rdb when set requirepass")
@@ -32,6 +34,7 @@ var (
 	toRedisAuthPass   = flag.String("to_auth_pass", "", "connect to to_addr with account password")
 	parseType         = flag.String("parse_type", "none", "<csv/json/none>.")
 	outDst            = flag.String("out_file", "./out_file", "<file-path/redis-host:redis-port>.For example: ./dump.rdb.csv")
+	outBigKey         = flag.Bool("big_key", false, "print big key")
 )
 
 func main() {
@@ -80,9 +83,40 @@ func main() {
 			return
 		}
 		transRedisRDBToRedis(*fromRedisAddr, *toRedisAddr, *toRedisAuthUser, *toRedisAuthPass)
+	case actionInfo:
+		if *rdbFile == "" {
+			fmt.Println("need rdb")
+			return
+		}
+		getRDBInfo(*rdbFile, *outBigKey)
 	default:
 		fmt.Println("not support action")
 		return
+	}
+}
+
+func getRDBInfo(rdbFile string, bigKey bool) {
+	info, err := load.GetRDBFileInfo(context.TODO(), rdbFile, load.GetRDBInfoArg{
+		OnlyRDBInfo:   !bigKey,
+		KeyStatistics: false,
+		BigKey:        bigKey,
+		BigKeyArg: load.BigKeyArg{
+			ValueSize: 1024,
+			TypeVal:   map[string]load.BigKey{},
+		},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("redis-version:%s bgsaveTime:%d usedMem:%d\n", info.RedisVersion, info.RedisCTime, info.RedisUsedMemory)
+	if bigKey {
+		data, err := json.Marshal(info.KeyStatistics)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(string(data))
 	}
 }
 

@@ -76,7 +76,8 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
         load:解析rdb文件并将rdb加载到redis中
         dump:从redis导出rdb,并按照指定的格式写入到文件
         trans:从redis导出rdb并加载到redis中,期间不落盘
-        
+        info:输出RDB信息和大key信息
+
   -from_addr string
         指令为dump/trans有效.源redis的地址,格式为ip:port,默认127.0.0.1:6379
 
@@ -90,7 +91,7 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
         指令为dump/parse有效.解析rdb文件为那种格式,可选项:kv|json|none(原rdb文件格式).默认为none
 
   -rdb string
-        指令为parse/load有效.需要解析rdb的文件全路径,默认为./dump.rdb
+        指令为parse/load/info有效.需要解析rdb的文件全路径,默认为./dump.rdb
 
   -to_addr string
         指令为load/trans有效.目标redis的地址,默认空
@@ -100,6 +101,9 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
 
   -to_auth_user string
         指令为load/trans有效.连接目标redis的地址需要的用户名(需要redis6.0以上),默认为空.
+
+  -big_key bool
+        指令为info有效.输出大key信息,默认为false.
 ```
 
 
