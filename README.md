@@ -51,7 +51,7 @@ A efficient and safe rdb dumper/parser in Golang.Interface is very friendly for 
 ### Reference
 parse code from [go-redis-parser](https://github.com/8090Lambert/go-redis-parser)
 
-dump code from [RedisShake][https://github.com/alibaba/RedisShake]
+dump code from [RedisShake](https://github.com/alibaba/RedisShake)
 
 ### Installation
 #### via git
