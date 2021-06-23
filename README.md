@@ -76,6 +76,7 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
         load:解析rdb文件并将rdb加载到redis中
         dump:从redis导出rdb,并按照指定的格式写入到文件
         trans:从redis导出rdb并加载到redis中,期间不落盘
+        
   -from_addr string
         指令为dump/trans有效.源redis的地址,格式为ip:port,默认127.0.0.1:6379
 
