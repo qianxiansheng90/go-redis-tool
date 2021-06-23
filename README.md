@@ -48,8 +48,9 @@ A efficient and safe rdb dumper/parser in Golang.Interface is very friendly for 
 - Support Load RDB to redis parallel(muti redis and very fast)
 - **Support Context**
 
-### Fork
+### Reference
 parse code from [go-redis-parser](https://github.com/8090Lambert/go-redis-parser)
+dump code from [RedisShake][https://github.com/alibaba/RedisShake]
 
 ### Installation
 #### via git
@@ -115,8 +116,10 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
 - 支持将RDB解析并行加载到Redis中(支持多个redis入口并且速度非常快)
 - **支持 Context**
 
-### Fork
-解析RDB的核心代码参考[go-redis-parser](https://github.com/8090Lambert/go-redis-parser)
+### 参考
+解析RDB的部分代码参考[go-redis-parser](https://github.com/8090Lambert/go-redis-parser)
+
+dump RDB的部分代码参考[RedisShake](https://github.com/alibaba/RedisShake)
 
 ### 安装使用
 #### via git
