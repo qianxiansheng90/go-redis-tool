@@ -34,6 +34,9 @@ var (
 // out command format
 func (l *RedisLoader) loadCommand(ctx context.Context, object parser.TypeObject) error {
 	l.totalKeyCount++
+	if err := l.limit(); err != nil {
+		return err
+	}
 	switch object.Type() {
 	case parser.SelectionDB{}.Type(): // 需要等待所有的conn切换db
 		return l.changeDB(object)

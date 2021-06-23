@@ -4,13 +4,16 @@
 package dump
 
 import (
-	"fmt"
+	"github.com/pkg/errors"
 )
 
 // 发送psync
 func (r *RDBDumper) sendPSync() error {
+	if err := r.setConnDeadline(); err != nil {
+		return err
+	}
 	if _, err := r.conn.Write(MustEncodeToBytes(NewCommand("sync"))); err != nil {
-		return fmt.Errorf("%s %s ", "write sync command failed", err.Error())
+		return errors.Wrap(err, "write sync command failed")
 	}
 	return nil
 }

@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // 初始化连接
@@ -25,7 +27,7 @@ func (r *RDBDumper) InitConnection() (int64, error) {
 		b := []byte{0}
 		r.conn.SetDeadline(time.Now().Add(time.Duration(r.readTimeout) * time.Second))
 		if _, err := r.conn.Read(b); err != nil {
-			return 0, fmt.Errorf("%s:%s %s", err.Error(), "read sync response = '%s'", rsp)
+			return 0, errors.Wrap(err, "read sync response = "+rsp)
 		}
 		if len(rsp) == 0 && b[0] == '\n' {
 			continue
@@ -36,11 +38,11 @@ func (r *RDBDumper) InitConnection() (int64, error) {
 		}
 	}
 	if rsp[0] != '$' {
-		return 0, fmt.Errorf("invalid sync response, rsp = '%s'", rsp)
+		return 0, errors.Errorf("invalid sync response, rsp = '%s'", rsp)
 	}
 	n, err := strconv.ParseInt(rsp[1:len(rsp)-2], 10, 64)
 	if err != nil || n <= 0 {
-		return 0, fmt.Errorf("invalid sync response = '%s', n = %d", rsp, n)
+		return 0, errors.Wrap(err, fmt.Sprintf("invalid sync response = '%s', n = %d", rsp, n))
 	}
 	r.rdbSize = n
 	return n, nil
@@ -58,7 +60,7 @@ func (r *RDBDumper) openConn() error {
 		r.conn, err = d.Dial("tcp", r.addr)
 	}
 	if err != nil {
-		return fmt.Errorf("%s:%s %s", err, "cannot connect to ", r.addr)
+		return errors.Wrap(err, "cannot connect to "+r.addr)
 	}
 
 	return r.auth()
@@ -67,18 +69,27 @@ func (r *RDBDumper) auth() error {
 	if r.password == "" {
 		return nil
 	}
-	r.conn.SetDeadline(time.Now().Add(time.Duration(r.readTimeout) * time.Second))
+	if err := r.setConnDeadline(); err != nil {
+		return err
+	}
 	_, err := r.conn.Write(MustEncodeToBytes(NewCommand("AUTH", r.password)))
 	if err != nil {
-		return fmt.Errorf("%s %s", "write auth command failed", err.Error())
+		return errors.Wrap(err, "write auth command failed")
 	}
 
 	ret, err := ReadRESPEnd(r.conn)
 	if err != nil {
-		return fmt.Errorf("%s %s", "read auth response failed", err.Error())
+		return errors.Wrap(err, "read auth response failed")
 	}
 	if strings.ToUpper(ret) != "+OK\r\n" {
-		return fmt.Errorf("auth failed[%v]", RemoveRESPEnd(ret))
+		return errors.Errorf("auth failed[%v]", RemoveRESPEnd(ret))
+	}
+	return nil
+}
+
+func (r *RDBDumper) setConnDeadline() error {
+	if err := r.conn.SetDeadline(time.Now().Add(time.Duration(r.readTimeout) * time.Second)); err != nil {
+		return err
 	}
 	return nil
 }

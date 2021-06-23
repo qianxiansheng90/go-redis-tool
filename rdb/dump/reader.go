@@ -6,40 +6,46 @@ import (
 	"time"
 )
 
+// netReader结构体
 type netReader struct {
-	reader      net.Conn
+	conn        net.Conn
 	readTimeout int
 	rdbSize     int64
 	readSize    int64
 }
 
-func newNetReader(reader net.Conn, readTimeout int, rdbSize int64) io.ReadCloser {
+// 新建一个netReader
+func newNetReader(conn net.Conn, readTimeout int, rdbSize int64) io.ReadCloser {
 	return &netReader{
-		reader:      reader,
+		conn:        conn,
 		readTimeout: readTimeout,
 		rdbSize:     rdbSize,
 	}
 }
+
+// 读取数据
 func (r *netReader) Read(p []byte) (int, error) {
-	if err := r.reader.SetDeadline(time.Now().Add(time.Duration(r.readTimeout) * time.Second)); err != nil {
+	if err := r.conn.SetDeadline(time.Now().Add(time.Duration(r.readTimeout) * time.Second)); err != nil {
 		return 0, err
 	}
-	var pSize = int64(len(p))
+	var pLen = int64(len(p))
+	var readLen = pLen
 	diff := r.rdbSize - r.readSize
-	if diff < int64(pSize) {
-		pSize = diff
+	if diff < pLen {
+		readLen = diff
 	}
-	size, err := r.reader.Read(p[:pSize])
+	size, err := r.conn.Read(p[:readLen])
 	r.readSize += int64(size)
-	if err == nil && pSize != int64(len(p)) {
+	if err == nil && readLen != pLen {
 		err = io.EOF
 	}
 	return size, err
 }
 
+// 关闭
 func (r *netReader) Close() error {
-	if r.reader == nil {
+	if r.conn == nil {
 		return nil
 	}
-	return r.reader.Close()
+	return r.conn.Close()
 }

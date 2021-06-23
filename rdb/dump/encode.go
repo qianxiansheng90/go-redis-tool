@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -65,7 +67,7 @@ func MustEncodeToBytes(r Resp) []byte {
 func (e *encoder) encodeResp(r Resp) error {
 	switch x := r.(type) {
 	default:
-		return fmt.Errorf("encode bad resp type <%s>", reflect.TypeOf(r))
+		return errors.Errorf("encode bad resp type <%s>", reflect.TypeOf(r))
 	case *String:
 		if err := e.encodeType(typeString); err != nil {
 			return err

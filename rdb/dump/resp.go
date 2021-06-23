@@ -8,6 +8,8 @@ import (
 	"net"
 	"reflect"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type respType byte
@@ -96,7 +98,7 @@ func AsString(r Resp, err error) ([]byte, error) {
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return make([]byte, 0), fmt.Errorf("expect String, but got <%s>", reflect.TypeOf(r))
+		return make([]byte, 0), errors.Errorf("expect String, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
@@ -108,7 +110,7 @@ func AsError(r Resp, err error) ([]byte, error) {
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return make([]byte, 0), fmt.Errorf("expect Error, but got <%s>", reflect.TypeOf(r))
+		return make([]byte, 0), errors.Errorf("expect Error, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
@@ -120,7 +122,7 @@ func AsBulkBytes(r Resp, err error) ([]byte, error) {
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return nil, fmt.Errorf("expect BulkBytes, but got <%s>", reflect.TypeOf(r))
+		return nil, errors.Errorf("expect BulkBytes, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
@@ -132,7 +134,7 @@ func AsInt(r Resp, err error) (int64, error) {
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return 0, fmt.Errorf("expect Int, but got <%s>", reflect.TypeOf(r))
+		return 0, errors.Errorf("expect Int, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
@@ -144,7 +146,7 @@ func AsArray(r Resp, err error) ([]Resp, error) {
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return nil, fmt.Errorf("expect Array, but got <%s>", reflect.TypeOf(r))
+		return nil, errors.Errorf("expect Array, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
@@ -172,7 +174,7 @@ func ReadRESPEnd(c net.Conn) (string, error) {
 	for {
 		b := make([]byte, 1)
 		if _, err := c.Read(b); err != nil {
-			return "", fmt.Errorf("read error[%v], current return[%s]", err, ret)
+			return "", errors.Errorf("read error[%v], current return[%s]", err, ret)
 		}
 
 		ret += string(b)
