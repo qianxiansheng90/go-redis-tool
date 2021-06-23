@@ -166,7 +166,7 @@ func (l *RedisLoader) loadCommandGoroutine(ctx context.Context, idx int, changeD
 
 // 批量处理key
 func (l *RedisLoader) handleRedisKeyPipeline(ctx context.Context, idx int, dbNum uint64, conn *redis.Client, objects []parser.TypeObject) error {
-	if l.loadArg.DelMode == true { // 删除数据模式
+	if l.loadArg.DelMode { // 删除数据模式
 		return l.delRedisKeyPipelineRetry(ctx, dbNum, conn, objects)
 	}
 	return l.loadRedisCommandPipelineRetry(ctx, idx, dbNum, conn, objects)
@@ -222,6 +222,7 @@ func (l *RedisLoader) loadRedisCommandPipelineRetry(ctx context.Context, idx int
 			if err = l.delRedisKeyPipelineRetry(ctx, dbNum, conn, objects); err != nil {
 				return err
 			}
+			continue
 		}
 		return nil
 	}
