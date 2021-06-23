@@ -23,12 +23,15 @@ const (
 )
 
 var (
-	action        = flag.String("action", actionDump, "<parse/load/dump/trans>.parse rdb file/load rdb file to redis/dump rdb from redis/dump rdb from redis and load to redis")
-	rdbFile       = flag.String("rdb", "", "<rdb-file-name>. For example: ./dump.rdb")
-	fromRedisAddr = flag.String("from_addr", "127.0.0.1:6379", "<redis-host:redis-port>.dump from redis addr.For example:192.168.1.1:6379")
-	toRedisAddr   = flag.String("to_addr", "", "<redis-host:redis-port>.load rdb to redis addr.For example:192.168.1.1:6379")
-	parseType     = flag.String("parse_type", "none", "<csv/json/none>.")
-	outDst        = flag.String("out_file", "./out_file", "<file-path/redis-host:redis-port>.For example: ./dump.rdb.csv")
+	action            = flag.String("action", actionDump, "<parse/load/dump/trans>.parse rdb file/load rdb file to redis/dump rdb from redis/dump rdb from redis and load to redis")
+	rdbFile           = flag.String("rdb", "", "<rdb-file-name>. For example: ./dump.rdb")
+	fromRedisAddr     = flag.String("from_addr", "127.0.0.1:6379", "<redis-host:redis-port>.dump from redis addr.For example:192.168.1.1:6379")
+	fromRedisAuthPass = flag.String("from_auth", "", "connect to from_addr dump rdb when set requirepass")
+	toRedisAddr       = flag.String("to_addr", "", "<redis-host:redis-port>.load rdb to redis addr.For example:192.168.1.1:6379")
+	toRedisAuthUser   = flag.String("to_auth_user", "", "connect to to_addr with account username")
+	toRedisAuthPass   = flag.String("to_auth_pass", "", "connect to to_addr with account password")
+	parseType         = flag.String("parse_type", "none", "<csv/json/none>.")
+	outDst            = flag.String("out_file", "./out_file", "<file-path/redis-host:redis-port>.For example: ./dump.rdb.csv")
 )
 
 func main() {
@@ -41,7 +44,7 @@ func main() {
 		}
 		switch *parseType {
 		case parseRDBToKV, parseRDBToJson, parseRDBToNone:
-			dumpRedisRDBToFile(*fromRedisAddr, *outDst, *parseType)
+			dumpRedisRDBToFile(*fromRedisAddr, *outDst, *parseType, *fromRedisAuthPass)
 		default:
 			fmt.Println("not support parse_type")
 		}
@@ -55,7 +58,7 @@ func main() {
 			return
 		}
 
-		loadRDBFileToRedis(*rdbFile, *toRedisAddr)
+		loadRDBFileToRedis(*rdbFile, *toRedisAddr, *toRedisAuthUser, *toRedisAuthPass)
 	case actionParse:
 		if *rdbFile == "" {
 			fmt.Println("need rdb")
@@ -76,7 +79,7 @@ func main() {
 			fmt.Println("need to_addr")
 			return
 		}
-		transRedisRDBToRedis(*fromRedisAddr, *toRedisAddr)
+		transRedisRDBToRedis(*fromRedisAddr, *toRedisAddr, *toRedisAuthUser, *toRedisAuthPass)
 	default:
 		fmt.Println("not support action")
 		return
@@ -112,11 +115,11 @@ func parseRDBFile(filePath, outType, dst string) {
 }
 
 // 将redis的rdb导出到文件
-func dumpRedisRDBToFile(fromRedisAddr, rdbFile, outType string) {
+func dumpRedisRDBToFile(fromRedisAddr, rdbFile, outType, userPass string) {
 	dumper := dump.NewRDBDumper(dump.DumperArg{
 		RedisAddr:        fromRedisAddr,
 		RedisUser:        "",
-		RedisPassword:    "",
+		RedisPassword:    userPass,
 		ReadTimeout:      0,
 		KeepAliveTimeout: 0,
 		TLSEnable:        false,
@@ -146,7 +149,7 @@ func dumpRedisRDBToFile(fromRedisAddr, rdbFile, outType string) {
 }
 
 // 加载rdb文件到redis
-func loadRDBFileToRedis(rdbFile, toRedisAddr string) {
+func loadRDBFileToRedis(rdbFile, toRedisAddr, userName, userPass string) {
 	file, err := os.Open(rdbFile)
 	if err != nil {
 		fmt.Println(err)
@@ -154,7 +157,9 @@ func loadRDBFileToRedis(rdbFile, toRedisAddr string) {
 	}
 	defer file.Close()
 	loader, err := load.NewRDBLoad(context.TODO(), file, load.LoadArg{
-		Addr: []string{toRedisAddr},
+		Addr:     []string{toRedisAddr},
+		Username: userName,
+		Password: userPass,
 	}, parser.ParseArg{})
 	if err != nil {
 		fmt.Println(err)
@@ -167,11 +172,11 @@ func loadRDBFileToRedis(rdbFile, toRedisAddr string) {
 }
 
 // 从redis将rdb导出到另一个redis中
-func transRedisRDBToRedis(fromRedisAddr, toRedisAddr string) {
+func transRedisRDBToRedis(fromRedisAddr, toRedisAddr, userName, userPass string) {
 	dumper := dump.NewRDBDumper(dump.DumperArg{
 		RedisAddr:        fromRedisAddr,
-		RedisUser:        "",
-		RedisPassword:    "",
+		RedisUser:        userName,
+		RedisPassword:    userPass,
 		ReadTimeout:      0,
 		KeepAliveTimeout: 0,
 		TLSEnable:        false,

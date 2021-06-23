@@ -45,22 +45,12 @@ type Resp interface {
 }
 
 type String struct {
-	//Value string
 	Value []byte
 }
-
-//func NewString(s string) *String {
-//	return &String{s}
-//}
 
 type Error struct {
-	//Value string
 	Value []byte
 }
-
-//func NewError(err error) *Error {
-//	return &Error{err.Error()}
-//}
 
 type Int struct {
 	Value int64
@@ -90,10 +80,6 @@ func (r *Array) Append(a Resp) {
 	r.Value = append(r.Value, a)
 }
 
-//func (r *Array) AppendString(s string) {
-//	r.Append(NewString(s))
-//}
-
 func (r *Array) AppendBulkBytes(b []byte) {
 	r.Append(NewBulkBytes(b))
 }
@@ -102,31 +88,27 @@ func (r *Array) AppendInt(n int64) {
 	r.Append(NewInt(n))
 }
 
-//func (r *Array) AppendError(err error) {
-//	r.Append(NewError(err))
-//}
-
 func AsString(r Resp, err error) ([]byte, error) {
 	if err != nil {
-		return make([]byte, 0, 0), err
+		return make([]byte, 0), err
 	}
 	x, ok := r.(*String)
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return make([]byte, 0, 0), fmt.Errorf("expect String, but got <%s>", reflect.TypeOf(r))
+		return make([]byte, 0), fmt.Errorf("expect String, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
 func AsError(r Resp, err error) ([]byte, error) {
 	if err != nil {
-		return make([]byte, 0, 0), err
+		return make([]byte, 0), err
 	}
 	x, ok := r.(*Error)
 	if ok && x != nil {
 		return x.Value, nil
 	} else {
-		return make([]byte, 0, 0), fmt.Errorf("expect Error, but got <%s>", reflect.TypeOf(r))
+		return make([]byte, 0), fmt.Errorf("expect Error, but got <%s>", reflect.TypeOf(r))
 	}
 }
 
