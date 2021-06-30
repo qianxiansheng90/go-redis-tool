@@ -43,9 +43,9 @@ A efficient and safe rdb dumper/parser in Golang.Interface is very friendly for 
     - Set
     - SortedSed
     - **Stream(Redis 5.0 new data type)**
-- Support Dump RDB (Will)
+- Support Dump RDB
 - Support Parse RDB
-- Support Load RDB to redis parallel(muti redis and very fast)
+- Support Load RDB to redis parallel(support muti redis and very fast)
 - **Support Context**
 
 ### Reference
@@ -117,7 +117,7 @@ go-redis-tool 是redis的RDB 转储和解析的工具，接口对开发者非常
     - SortedSed
     - **Stream(Redis 5.0 new data type)**
     - Module(Not support)
-- 支持 dump rdb (Will)
+- 支持 dump rdb
 - 支持解析rdb
 - 支持将RDB解析并行加载到Redis中(支持多个redis入口并且速度非常快)
 - **支持 Context**
