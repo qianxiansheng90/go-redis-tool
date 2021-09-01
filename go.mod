@@ -1,4 +1,4 @@
-module github.com/qianxiansheng90/go-redis-parser
+module github.com/qianxiansheng90/go-redis-tool
 
 go 1.12
 
