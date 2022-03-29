@@ -8,9 +8,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/qianxiansheng90/go-redis-parser/rdb/dump"
-	"github.com/qianxiansheng90/go-redis-parser/rdb/load"
-	"github.com/qianxiansheng90/go-redis-parser/rdb/parser"
+	"github.com/qianxiansheng90/go-redis-tool/rdb/dump"
+	"github.com/qianxiansheng90/go-redis-tool/rdb/load"
+	"github.com/qianxiansheng90/go-redis-tool/rdb/parser"
 )
 
 const (

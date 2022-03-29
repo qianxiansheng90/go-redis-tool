@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/pkg/errors"
-	"github.com/qianxiansheng90/go-redis-parser/rdb/parser"
+	"github.com/qianxiansheng90/go-redis-tool/rdb/parser"
 )
 
 const (
@@ -30,9 +30,16 @@ type RDBInfo struct {
 
 // 大key统计
 type BigKeyStatistics struct {
-	KeyTotalCount int64    `json:"big_key_count"`
-	KeyTotalSize  uint64   `json:"big_key_total_size"`
-	KeyList       []string `json:"big_key_list"`
+	KeyTotalCount int64     `json:"big_key_count"`
+	KeyTotalSize  uint64    `json:"big_key_total_size"`
+	KeyList       []KeyInfo `json:"big_key_list"`
+}
+
+type KeyInfo struct {
+	KeyName           string `json:"key_name"`
+	KeyType           string `json:"key_type"`
+	ValueTotalSize    uint64 `json:"value_total_size"`
+	ValueTotalItemLen uint64 `json:"value_total_item_len"`
 }
 
 // 参数
@@ -230,7 +237,12 @@ func (r *rdbInfo) checkBigKey(dbNumber int, keyType, keyName string, valLen, val
 	if exist == true && (big.ValueSize > 0 && valSize > big.ValueSize) || (big.MemberLen > 0 && valLen >= big.MemberLen) {
 		keyStatistics.KeyTotalCount++
 		keyStatistics.KeyTotalSize += valSize
-		keyStatistics.KeyList = append(keyStatistics.KeyList, keyName)
+		keyStatistics.KeyList = append(keyStatistics.KeyList, KeyInfo{
+			KeyName:           keyName,
+			KeyType:           keyType,
+			ValueTotalSize:    valSize,
+			ValueTotalItemLen: valLen,
+		})
 		mapKeyStatistics[keyType] = keyStatistics
 		r.info.KeyStatistics[dbNumber] = mapKeyStatistics
 	}

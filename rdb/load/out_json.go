@@ -7,7 +7,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/qianxiansheng90/go-redis-parser/rdb/parser"
+	"github.com/qianxiansheng90/go-redis-tool/rdb/parser"
 )
 
 type OutJson struct {

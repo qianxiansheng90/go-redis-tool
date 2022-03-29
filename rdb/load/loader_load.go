@@ -11,8 +11,8 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
-	"github.com/qianxiansheng90/go-redis-parser/log_interface"
-	"github.com/qianxiansheng90/go-redis-parser/rdb/parser"
+	"github.com/qianxiansheng90/go-redis-tool/log_interface"
+	"github.com/qianxiansheng90/go-redis-tool/rdb/parser"
 )
 
 const (
